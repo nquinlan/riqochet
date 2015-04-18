@@ -26,7 +26,7 @@ function _getBasicAuthHeader (username, password) {
 }
 
 function _cacheOrDo(cacheName, cacheElse) {
-  var cache = CacheService.getPublicCache();
+  var cache = CacheService.getScriptCache();
   var cached = cache.get(cacheName);
   if (cached !== null && cached !== undefined && cached !== "undefined") {
     return cached;
