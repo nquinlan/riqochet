@@ -1,4 +1,4 @@
-# RiQochet
+# RiQochet  ![](https://raw.githubusercontent.com/nquinlan/riqochet/resources/assets/logo.png)
 RiQochet is a Google Sheets Add-On to get RelateIQ data into Google Sheets, using formulas.
 
 _RiQochet is currently under active development and not well tested. Use at your own risk._
