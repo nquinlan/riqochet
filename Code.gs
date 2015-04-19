@@ -45,7 +45,19 @@ function _rawRiQRequest (apiKey, apiSecret, url, params) {
       }
     };
     var options = _mergeRecursive(defaults, params);
-    var result = UrlFetchApp.fetch(url, options);
+    try {
+      var result = UrlFetchApp.fetch(url, options);
+    } catch (e) {
+      throw new Error( "Cannot communicate with RelateIQ, please try again later.");
+    }
+
+    var code = result.getResponseCode();
+    if(code === 401) {
+      throw new Error( "Cannot authenticate, please check your API Keys.");
+    }
+    if(code !== 200) {
+      throw new Error( "Cannot get information from RelateIQ, please try again later.");
+    }
     var contents = result.getContentText();
     return contents;
 }
@@ -55,14 +67,16 @@ function _riQRequest (apiKey, apiSecret, url, params) {
   return JSON.parse(raw);
 }
 
-function _riQuestFull (apiKey, apiSecret, url, key, params) {
+function _riQuestFull (apiKey, apiSecret, url, key, params, limit) {
+  var limit = limit || 20;
+
   var body;
   var contents = {};
   contents[key] = [1];
   var i = 0;
   while(contents[key].length !== 0) {
-    var fullURL = url + "?_limit=20&_start=" + i*20;
-    contents = _riQRequest(apiKey, apiSecret, fullURL);
+    var fullURL = url + "?_limit=" + limit + "&_start=" + i*limit;
+    contents = _riQRequest(apiKey, apiSecret, fullURL, params);
     if(!body) {
       body = contents;
     }else{
@@ -147,11 +161,10 @@ function RIQ_FIELD(eventName, fieldName) {
   var item = list[eventName.trim()] || list[eventName];
   
   if(!item) {
-    throw new Error( "Cannot find list item." );
+    throw new Error( "Cannot find list item.");
   }
   
   if(!item[fieldName]) {
-    Logger.log(item);
     throw new Error( "Cannot find field." );
   }
   
